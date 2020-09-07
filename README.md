@@ -67,3 +67,33 @@ The below command generates private-public key pair. (.p12 file)
 		System.out.println("Verification failed!");
 ```
 
+# Digital Signature Using the Signature Class
+
+## Signing the Message
+```
+	byte[] messageBytes = Files.readAllBytes(Paths.get("D:\\Digital Signature\\message.txt"));
+	MessageDigest md = MessageDigest.getInstance("SHA-256");
+	byte[] messageHash = md.digest(messageBytes);
+	Signature signature = Signature.getInstance("SHA256withRSA");
+	signature.initSign(privateKey);
+	signature.update(messageHash);
+	byte[] digitalSignature = signature.sign();
+	Files.write(Paths.get("D:\\Digital Signature\\digital_signature_2"), digitalSignature);
+	System.out.println("Signing is done successfully.");
+```
+
+## Verifying the Signature
+```
+	byte[] messageBytes = Files.readAllBytes(Paths.get("D:\\Digital Signature\\message.txt"));
+	MessageDigest md = MessageDigest.getInstance("SHA-256");
+	byte[] messageHash = md.digest(messageBytes);
+	Signature signature = Signature.getInstance("SHA256withRSA");
+	signature.initVerify(publicKey);
+	signature.update(messageHash);
+	byte[] signatureBytes = Files.readAllBytes(Paths.get("D:\\Digital Signature\\digital_signature_2"));
+	boolean isCorrect = signature.verify(signatureBytes);
+	if(isCorrect)
+		System.out.println("Verified Successfully.");
+	else
+		System.out.println("Verification failed!");
+```
