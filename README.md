@@ -1,6 +1,8 @@
 # Digital-Signing-and-Verifying
 
 # Key Pair Management
+To create a key pair of a private and public key, we'll use the Java keytool.
+
 ## Getting a KeyPair
 Make sure that java is installed in your PC. Then execute the below command in the commandline. 
 The below command generates private-public key pair. (.p12 file)
@@ -9,6 +11,7 @@ The below command generates private-public key pair. (.p12 file)
 ```
 
 ## Loading the Private Key for Signing
+In order to sign a message, we need an instance of the PrivateKey.
 ```
 	KeyStore keyStore = KeyStore.getInstance("PKCS12");
 	keyStore.load(new FileInputStream("D:\\Digital Signature\\mykeypair.p12"), "changeit".toCharArray());
@@ -16,20 +19,24 @@ The below command generates private-public key pair. (.p12 file)
 ```
 
 ## Publishing the Public Key
+In order to verify the signature in other side, we need to have public key.
+So along with signature we have to public key to verify the signature of the message.
 ```
 	keytool -exportcert -alias mykeypair -storetype PKCS12 -keystore mykeypair.p12 -file pub_certificate.cer -rfc -storepass changeit
 ```
 
 ## Generate Certificate Signing Request - (Needed for CA signed certificate)
+if we're going to work with a CA-signed certificate, then we need to create a certificate signing request (CSR). We do this with the certreq command:
 ```
 	keytool -certreq -alias mykeypair -storetype PKCS12 -keystore mykeypair.p12 -file cert_signing_request.csr -storepass changeit
 ```
 
 ## Loading Public Key for Verification
+The receiver can load it into their Keystore using the importcert command
 ```
 	keytool -importcert -alias newkeypair -storetype PKCS12 -keystore newkeypair.p12 -file pub_certificate.cer -storepass changeit
 ```
-
+We need to have Public Key instance to verify the signature
 ```
 	import java.security.cert.Certificate;;
 	KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -40,7 +47,6 @@ The below command generates private-public key pair. (.p12 file)
 
 # Digital Signature With MessageDigest and Cipher Classes
 ## Signing the message (encrypting hash)
-
 ```
 	byte[] messageBytes = Files.readAllBytes(Paths.get("D:\\Digital Signature\\message.txt"));
 	MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -68,7 +74,6 @@ The below command generates private-public key pair. (.p12 file)
 ```
 
 # Digital Signature Using the Signature Class
-
 ## Signing the Message
 ```
 	byte[] messageBytes = Files.readAllBytes(Paths.get("D:\\Digital Signature\\message.txt"));
@@ -97,4 +102,3 @@ The below command generates private-public key pair. (.p12 file)
 	else
 		System.out.println("Verification failed!");
 ```
-https://www.baeldung.com/java-digital-signature
